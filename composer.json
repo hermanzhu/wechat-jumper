@@ -1,0 +1,14 @@
+{
+    "name": "wechat-jumper",
+    "description": "wechat jumper php version",
+    "require": {
+        "guzzlehttp/guzzle": "^6.3",
+        "symfony/var-dumper": "^3.4",
+        "symfony/console": "^3.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "WechatJumper\\": "./src"
+        }
+    }
+}

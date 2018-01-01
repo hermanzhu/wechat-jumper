@@ -1,0 +1,22 @@
+#!/usr/bin/env php
+<?php
+/**
+ * Wechat Jumper
+ * 
+ * @author herman zhu <i@imzsy.com>
+ */
+
+require __DIR__.'/vendor/autoload.php';
+
+define('TMP_DIR', __DIR__.'/tmp/');
+
+if (!file_exists(TMP_DIR)) {
+    mkdir(TMP_DIR, 0777, true);
+}
+
+$application = new Symfony\Component\Console\Application();
+
+$application->add(new \WechatJumper\JumpCommanderIOS());
+$application->add(new \WechatJumper\JumpCommanderAndroid());
+
+$application->run();
