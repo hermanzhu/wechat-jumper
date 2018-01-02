@@ -60,6 +60,18 @@ class JumpCommanderIOS extends Command
             }
         );
         $host = $helper->ask($input, $output, $question);
+
+        $question = new Question(
+            '<question>请配置距离计算系数(默认2.04):</question>'.PHP_EOL.PHP_EOL,
+            '2.04'
+        );
+        $question->setNormalizer(
+            function ($value) {
+                return $value ? trim($value) : '';
+            }
+        );
+        $col = $helper->ask($input, $output, $question);
+
         $this->host = $host;
 
         // set session
@@ -73,7 +85,7 @@ class JumpCommanderIOS extends Command
             $img = new ImageAnalyzer(TMP_DIR.self::IMAGE);
             $currentPoint = $img->findCurrent();
             $targetPoint = $img->findTarget();
-            $time = $this->calculate($currentPoint, $targetPoint);
+            $time = $this->calculate($currentPoint, $targetPoint, $col);
 
             $output->writeln('<info>+++++++++++++++++++++++++++++++</info>');
             $output->writeln('<info> ++++++当前[x:'.$currentPoint[0].';y:'.$currentPoint[1].']++++++</info>');
