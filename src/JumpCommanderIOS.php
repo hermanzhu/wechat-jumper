@@ -78,7 +78,7 @@ class JumpCommanderIOS extends Command
             $output->writeln('<info>+++++++++++++++++++++++++++++++</info>');
             $output->writeln('<info> ++++++当前[x:'.$currentPoint[0].';y:'.$currentPoint[1].']++++++</info>');
             $output->writeln('<info> ++++++目标[x:'.$targetPoint[0].';y:'.$targetPoint[1].']++++++</info>');
-            $output->writeln('<info> +++按下时间:'.($time*1000).'ms+++</info>');
+            $output->writeln('<info>   按下时间:'.($time*1000).'ms</info>');
             $output->writeln('<info>+++++++++++++++++++++++++++++++</info>');
             $output->writeln('');
             $output->writeln('');

@@ -17,7 +17,7 @@ trait CalculateTrait
      *
      * @return float
      */
-    public function calculate($p1, $p2, $co = 2.0)
+    public function calculate($p1, $p2, $co = 2.04)
     {
         $w = abs($p1[0]-$p2[0]);
         $h = abs($p1[1]-$p2[1]);

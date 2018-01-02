@@ -40,8 +40,8 @@ class ImageAnalyzer
     {
         for ($height = 860; $height >= 540; $height --) {
             for ($width = 20; $width <= 700; $width ++) {
-                $rgb = $this->rgbArray(imagecolorat($this->source, $width, $height));
-                $rgbBottom = $this->rgbArray(imagecolorat($this->source, $width-10, $height+66));
+                $rgb = $this->colorAt($width, $height);
+                $rgbBottom = $this->colorAt($width-10, $height+66);
                 if ($this->colorSimilar($rgb, $this->currentColorSample, 8)
                     && $this->colorSimilar($rgbBottom, $this->currentColorSampleBottom, 15)
                 ) {
@@ -65,65 +65,46 @@ class ImageAnalyzer
         if ($cp[0] < 360) {
             // 人物在左侧
             for ($height = 470; $height <= 615; $height++) {
-                for ($width = 700; $width >= 360; $width--) {
+                for ($width = 700; $width >= 370; $width--) {
                     //在范围内逐行扫描，找到最高点
-                    $rgb = $this->rgbArray(imagecolorat($this->source, $width, $height));
+                    $rgb = $this->colorAt($width, $height);
                     //和底色以及人物颜色误差超过阈值则认为是目标点最高点
-                    if (!$this->colorSimilar($rgb, $this->bgColor(700, $height), 15)
-                        // && !$this->colorSimilar($rgb, $this->currentColorSample, 10)
+                    if ($this->colorHugeSimilar($rgb, $this->colorAt(700, $height), 25)
+                        && !$this->colorSimilar($rgb, $this->currentColorSampleBottom, 10)
                     ) {
-                        $need = $this->rgbArray(imagecolorat($this->source, $width, $height+10));
-                        dump($width, $height, $need);
+                        $need = $this->colorAt($width, $height+10);
+                        // dump($width, $height, $need, $rgb, $this->colorAt(700, $height));
                         //根据需要的颜色从又往左寻找最右侧的相似点
                         for ($x = 700; $x >= 360; $x --) {
                             for ($y = 470; $y <= 615; $y ++) {
-                                if ($this->colorSimilar($need, $this->bgColor($x, $y), 5)) {
+                                if ($this->colorSimilar($need, $this->colorAt($x, $y), 7)) {
                                     return [$width, $y];
                                 }
                             }
                         }
-                        //从下往上扫描接近这个颜色的点
-                        // for ($anotherHeight = 615; $anotherHeight > $height; $anotherHeight--) {
-                        //     $rgb = $this->rgbArray(imagecolorat($this->source, $width, $anotherHeight));
-                        //     if ($this->colorSimilar($rgb, $need, 6)) {
-                        //         dump($height, $anotherHeight);
-
-                        //         return [$width, (int) round(($height+$anotherHeight)/2)];
-                        //     }
-                        // }
                     }
                 }
             }
         } else {
             // 人物在右侧
             for ($height = 470; $height <= 615; $height++) {
-                for ($width = 20; $width <= 360; $width++) {
+                for ($width = 20; $width <= 350; $width++) {
                     //在范围内逐行扫描，找到最高点
-                    $rgb = $this->rgbArray(imagecolorat($this->source, $width, $height));
+                    $rgb = $this->colorAt($width, $height);
                     //和底色以及人物颜色误差超过阈值则认为是目标点最高点
-                    if (!$this->colorSimilar($rgb, $this->bgColor(700, $height), 15)
-                        // && !$this->colorSimilar($rgb, $this->currentColorSample, 10)
+                    if ($this->colorHugeSimilar($rgb, $this->colorAt(700, $height), 25)
+                        && !$this->colorSimilar($rgb, $this->currentColorSampleBottom, 10)
                     ) {
-                        $need = $this->rgbArray(imagecolorat($this->source, $width, $height+10));
-                        dump($width, $height, $need);
+                        $need = $this->colorAt($width, $height+10);
+                        // dump($width, $height, $need, $rgb, $this->colorAt(700, $height));
                         //根据需要的颜色从左往右寻找最右侧的相似点
                         for ($x = 20; $x <= 360; $x ++) {
                             for ($y = 470; $y <= 615; $y ++) {
-                                if ($this->colorSimilar($need, $this->bgColor($x, $y), 5)) {
+                                if ($this->colorSimilar($need, $this->colorAt($x, $y), 7)) {
                                     return [$width, $y];
                                 }
                             }
                         }
-                        // //从下往上扫描接近这个颜色的点
-                        // $need = $this->rgbArray(imagecolorat($this->source, $width, $height+5));
-                        // for ($anotherHeight = 635; $anotherHeight > $height; $anotherHeight--) {
-                        //     $rgb = $this->rgbArray(imagecolorat($this->source, $width, $anotherHeight));
-                        //     if ($this->colorSimilar($rgb, $need, 6)) {
-                        //         dump($height, $anotherHeight);
-
-                        //         return [$width, (int) round(($height+$anotherHeight)/2)];
-                        //     }
-                        // }
                     }
                 }
             }
@@ -165,6 +146,22 @@ class ImageAnalyzer
     }
 
     /**
+     * Caculate huge similar.
+     *
+     * @param array $rgb1 color1
+     * @param array $rgb2 color2
+     * @param int   $gap  gap
+     * 
+     * @return boolean
+     */
+    protected function colorHugeSimilar($rgb1, $rgb2, $gap)
+    {
+        return (abs($rgb1[0]-$rgb2[0]) > $gap)
+            || (abs($rgb1[1]-$rgb2[1]) > $gap)
+            || (abs($rgb1[2]-$rgb2[2]) > $gap);
+    }
+
+    /**
      * Get bg color
      *
      * @param int $width  width
@@ -172,7 +169,7 @@ class ImageAnalyzer
      *
      * @return array
      */
-    protected function bgColor($width, $height)
+    protected function colorAt($width, $height)
     {
         return $this->rgbArray(imagecolorat($this->source, $width, $height));
     }
