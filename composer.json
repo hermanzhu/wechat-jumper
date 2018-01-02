@@ -1,6 +1,7 @@
 {
     "name": "wechat-jumper",
     "description": "wechat jumper php version",
+    "keywords": ["wechat", "jump", "微信", "跳一跳"],
     "require": {
         "guzzlehttp/guzzle": "^6.3",
         "symfony/var-dumper": "^3.4",
