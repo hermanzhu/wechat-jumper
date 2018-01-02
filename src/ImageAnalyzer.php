@@ -2,7 +2,7 @@
 
 /**
  * Image Analyzer.
- * 
+ *
  * @author herman <i@imzsy.com>
  */
 
@@ -10,7 +10,7 @@ namespace WechatJumper;
 
 /**
  * ImageAnalyzer
- * 
+ *
  * Current: 56 56 98
  */
 class ImageAnalyzer
@@ -29,7 +29,6 @@ class ImageAnalyzer
         $this->source = $this->dealWithImage($file);
     }
 
-    
     /**
      * Find current coord.
      *
@@ -38,7 +37,7 @@ class ImageAnalyzer
     public function findCurrent()
     {
         for ($height = 860; $height >= 630; $height --) {
-            for ($width = 20; $width <=700; $width ++) {
+            for ($width = 20; $width <= 700; $width ++) {
                 $rgb = $this->rgbArray(imagecolorat($this->source, $width, $height));
                 if ($this->colorSimilar($rgb, $this->currentColorSample, 3)) {
                     return [$width, $height];
@@ -65,7 +64,7 @@ class ImageAnalyzer
                     //在范围内逐行扫描，找到最高点
                     $rgb = $this->rgbArray(imagecolorat($this->source, $width, $height));
                     //和底色以及人物颜色误差超过阈值则认为是目标点最高点
-                    if (!$this->colorSimilar($rgb, $this->bgColor($width-30, $height), 10)
+                    if (!$this->colorSimilar($rgb, $this->bgColor($width+19, $height), 10)
                         && !$this->colorSimilar($rgb, $this->currentColorSample, 30)
                     ) {
                         //从下往上扫描接近这个颜色的点
@@ -86,7 +85,7 @@ class ImageAnalyzer
                     //在范围内逐行扫描，找到最高点
                     $rgb = $this->rgbArray(imagecolorat($this->source, $width, $height));
                     //和底色以及人物颜色误差超过阈值则认为是目标点最高点
-                    if (!$this->colorSimilar($rgb, $this->bgColor($width+30, $height), 10)
+                    if (!$this->colorSimilar($rgb, $this->bgColor($width-19, $height), 10)
                         && !$this->colorSimilar($rgb, $this->currentColorSample, 30)
                     ) {
                         //从下往上扫描接近这个颜色的点
@@ -102,15 +101,14 @@ class ImageAnalyzer
             }
         }
 
-
-        throw new \Exception('未找到目标位的坐标，可能需要调整参数……'); 
+        throw new \Exception('未找到目标位的坐标，可能需要调整参数……');
     }
 
     /**
      * Convert rgb.
      *
      * @param string $rgb color index
-     * 
+     *
      * @return array
      */
     protected function rgbArray($rgb)
@@ -128,7 +126,7 @@ class ImageAnalyzer
      * @param array $rgb1 color1
      * @param array $rgb2 color2
      * @param int   $gap  gap
-     * 
+     *
      * @return boolean
      */
     protected function colorSimilar($rgb1, $rgb2, $gap)
@@ -140,7 +138,7 @@ class ImageAnalyzer
 
     /**
      * Get bg color
-     * 
+     *
      * @param int $width  width
      * @param int $height height
      *
@@ -155,7 +153,7 @@ class ImageAnalyzer
      * Resize image to 720p.
      *
      * @param string $file image file.
-     * 
+     *
      * @return resource
      */
     protected function dealWithImage($file)
@@ -167,6 +165,7 @@ class ImageAnalyzer
         $to = imagecreatetruecolor(720, $newHeight);
         $new = imagecopyresampled($to, $src, 0, 0, 0, 0, 720, $newHeight, $width, $height);
         imagepng($to, $file);
+
         return imagecreatefrompng($file);
     }
 }

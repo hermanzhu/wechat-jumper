@@ -14,7 +14,7 @@ trait CalculateTrait
      *
      * @param array $p1 point
      * @param array $p2 point
-     * 
+     *
      * @return float
      */
     public function calculate($p1, $p2)
@@ -22,6 +22,6 @@ trait CalculateTrait
         $w = abs($p1[0]-$p2[0]);
         $h = abs($p1[1]-$p2[1]);
 
-        return round(sqrt(($w*$w)+($h*$h))*1.76/1000, 5);
+        return round(sqrt(($w*$w)+($h*$h))*1.83/1000, 5);
     }
 }
