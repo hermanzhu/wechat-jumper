@@ -17,11 +17,14 @@ trait CalculateTrait
      *
      * @return float
      */
-    public function calculate($p1, $p2)
+    public function calculate($p1, $p2, $co = 2.0)
     {
         $w = abs($p1[0]-$p2[0]);
         $h = abs($p1[1]-$p2[1]);
+        $length = sqrt(($w*$w)+($h*$h));
+        // $co = $length > 350 ? $co + 0.05 : $co;
+        // $co = $length < 200 ? $co - 0.05 : $co;
 
-        return round(sqrt(($w*$w)+($h*$h))*1.83/1000, 5);
+        return $length*$co/1000;
     }
 }

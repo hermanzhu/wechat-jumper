@@ -1,7 +1,7 @@
 <?php
 /**
  * Jumper Command Class
- * 
+ *
  * @author herman <i@imzsy.com>
  */
 
@@ -23,6 +23,7 @@ class JumpCommanderIOS extends Command
     use CalculateTrait;
 
     const IMAGE = 'image.png';
+    const BACKUP_IMAGE = 'backup.png';
 
     protected $host = 'http://localhost:8100';
     protected $session = '';
@@ -32,23 +33,13 @@ class JumpCommanderIOS extends Command
      * @var HttpClient
      */
     protected $httpClient;
-    /**
-     * Configure
-     *
-     * @return void
-     */
-    protected function configure()
-    {
-        $this->setName('ios')
-            ->setDescription('微信跳一跳AI，iOS工具');
-    }
 
     /**
      * Execute command
      *
      * @param InputInterface  $input  input
      * @param OutputInterface $output output
-     * 
+     *
      * @return void
      */
     public function execute(InputInterface $input, OutputInterface $output)
@@ -87,7 +78,7 @@ class JumpCommanderIOS extends Command
             $output->writeln('<info>+++++++++++++++++++++++++++++++</info>');
             $output->writeln('<info> ++++++当前[x:'.$currentPoint[0].';y:'.$currentPoint[1].']++++++</info>');
             $output->writeln('<info> ++++++目标[x:'.$targetPoint[0].';y:'.$targetPoint[1].']++++++</info>');
-            $output->writeln('<info> +++++按下时间:  '.($time*1000).'ms+++++</info>');
+            $output->writeln('<info> +++按下时间:'.($time*1000).'ms+++</info>');
             $output->writeln('<info>+++++++++++++++++++++++++++++++</info>');
             $output->writeln('');
             $output->writeln('');
@@ -102,7 +93,7 @@ class JumpCommanderIOS extends Command
      * Simulate touch
      *
      * @param float $time duration time
-     * 
+     *
      * @return void
      */
     protected function touch($time)
@@ -135,6 +126,9 @@ class JumpCommanderIOS extends Command
         list(, $data)      = explode(',', $data);
         $data = base64_decode($data);
 
+        if (file_exists(TMP_DIR.self::IMAGE)) {
+            copy(TMP_DIR.self::IMAGE, TMP_DIR.self::BACKUP_IMAGE);
+        }
         try {
             file_put_contents(TMP_DIR.self::IMAGE, $data);
         } catch (\Exception $e) {
@@ -154,5 +148,16 @@ class JumpCommanderIOS extends Command
         $res = json_decode($res->getBody(), true);
 
         $this->session = $res['sessionId'];
+    }
+
+    /**
+     * Configure
+     *
+     * @return void
+     */
+    protected function configure()
+    {
+        $this->setName('ios')
+            ->setDescription('微信跳一跳AI，iOS工具');
     }
 }

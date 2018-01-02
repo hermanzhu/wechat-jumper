@@ -15,7 +15,9 @@ namespace WechatJumper;
  */
 class ImageAnalyzer
 {
-    protected $currentColorSample = [56, 55, 97];
+    protected $currentColorSample = [148, 137, 177];
+    protected $currentColorSampleBottom = [56, 52, 95];
+    // protected $currentColorSample = [56, 52, 95];
 
     /**
      * Construct
@@ -36,11 +38,14 @@ class ImageAnalyzer
      */
     public function findCurrent()
     {
-        for ($height = 860; $height >= 630; $height --) {
+        for ($height = 860; $height >= 540; $height --) {
             for ($width = 20; $width <= 700; $width ++) {
                 $rgb = $this->rgbArray(imagecolorat($this->source, $width, $height));
-                if ($this->colorSimilar($rgb, $this->currentColorSample, 3)) {
-                    return [$width, $height];
+                $rgbBottom = $this->rgbArray(imagecolorat($this->source, $width-10, $height+66));
+                if ($this->colorSimilar($rgb, $this->currentColorSample, 8)
+                    && $this->colorSimilar($rgbBottom, $this->currentColorSampleBottom, 15)
+                ) {
+                    return [$width-10, $height+66];
                 }
             }
         }
@@ -64,17 +69,28 @@ class ImageAnalyzer
                     //在范围内逐行扫描，找到最高点
                     $rgb = $this->rgbArray(imagecolorat($this->source, $width, $height));
                     //和底色以及人物颜色误差超过阈值则认为是目标点最高点
-                    if (!$this->colorSimilar($rgb, $this->bgColor($width+19, $height), 10)
-                        && !$this->colorSimilar($rgb, $this->currentColorSample, 30)
+                    if (!$this->colorSimilar($rgb, $this->bgColor(700, $height), 15)
+                        // && !$this->colorSimilar($rgb, $this->currentColorSample, 10)
                     ) {
-                        //从下往上扫描接近这个颜色的点
-                        $need = $rgb;
-                        for ($anotherHeight = 615; $anotherHeight > $height; $anotherHeight--) {
-                            $rgb = $this->rgbArray(imagecolorat($this->source, $width, $anotherHeight));
-                            if ($this->colorSimilar($rgb, $need, 4)) {
-                                return [$width, (int) round(($height+$anotherHeight)/2)];
+                        $need = $this->rgbArray(imagecolorat($this->source, $width, $height+10));
+                        dump($width, $height, $need);
+                        //根据需要的颜色从又往左寻找最右侧的相似点
+                        for ($x = 700; $x >= 360; $x --) {
+                            for ($y = 470; $y <= 615; $y ++) {
+                                if ($this->colorSimilar($need, $this->bgColor($x, $y), 5)) {
+                                    return [$width, $y];
+                                }
                             }
                         }
+                        //从下往上扫描接近这个颜色的点
+                        // for ($anotherHeight = 615; $anotherHeight > $height; $anotherHeight--) {
+                        //     $rgb = $this->rgbArray(imagecolorat($this->source, $width, $anotherHeight));
+                        //     if ($this->colorSimilar($rgb, $need, 6)) {
+                        //         dump($height, $anotherHeight);
+
+                        //         return [$width, (int) round(($height+$anotherHeight)/2)];
+                        //     }
+                        // }
                     }
                 }
             }
@@ -85,17 +101,29 @@ class ImageAnalyzer
                     //在范围内逐行扫描，找到最高点
                     $rgb = $this->rgbArray(imagecolorat($this->source, $width, $height));
                     //和底色以及人物颜色误差超过阈值则认为是目标点最高点
-                    if (!$this->colorSimilar($rgb, $this->bgColor($width-19, $height), 10)
-                        && !$this->colorSimilar($rgb, $this->currentColorSample, 30)
+                    if (!$this->colorSimilar($rgb, $this->bgColor(700, $height), 15)
+                        // && !$this->colorSimilar($rgb, $this->currentColorSample, 10)
                     ) {
-                        //从下往上扫描接近这个颜色的点
-                        $need = $rgb;
-                        for ($anotherHeight = 635; $anotherHeight > $height; $anotherHeight--) {
-                            $rgb = $this->rgbArray(imagecolorat($this->source, $width, $anotherHeight));
-                            if ($this->colorSimilar($rgb, $need, 6)) {
-                                return [$width, (int) round(($height+$anotherHeight)/2)];
+                        $need = $this->rgbArray(imagecolorat($this->source, $width, $height+10));
+                        dump($width, $height, $need);
+                        //根据需要的颜色从左往右寻找最右侧的相似点
+                        for ($x = 20; $x <= 360; $x ++) {
+                            for ($y = 470; $y <= 615; $y ++) {
+                                if ($this->colorSimilar($need, $this->bgColor($x, $y), 5)) {
+                                    return [$width, $y];
+                                }
                             }
                         }
+                        // //从下往上扫描接近这个颜色的点
+                        // $need = $this->rgbArray(imagecolorat($this->source, $width, $height+5));
+                        // for ($anotherHeight = 635; $anotherHeight > $height; $anotherHeight--) {
+                        //     $rgb = $this->rgbArray(imagecolorat($this->source, $width, $anotherHeight));
+                        //     if ($this->colorSimilar($rgb, $need, 6)) {
+                        //         dump($height, $anotherHeight);
+
+                        //         return [$width, (int) round(($height+$anotherHeight)/2)];
+                        //     }
+                        // }
                     }
                 }
             }
@@ -158,7 +186,6 @@ class ImageAnalyzer
      */
     protected function dealWithImage($file)
     {
-        copy($file, $file.'.back.png');
         list($width, $height) = getimagesize($file);
         $newHeight = 720/($width/$height);
         $src = imagecreatefrompng($file);
