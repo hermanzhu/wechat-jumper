@@ -1,7 +1,7 @@
 <?php
 /**
  * Calculate Trait.
- * 
+ *
  * @author herman <i@imzsy.com>
  */
 

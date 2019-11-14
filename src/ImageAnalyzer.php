@@ -151,7 +151,7 @@ class ImageAnalyzer
      * @param array $rgb1 color1
      * @param array $rgb2 color2
      * @param int   $gap  gap
-     * 
+     *
      * @return boolean
      */
     protected function colorHugeSimilar($rgb1, $rgb2, $gap)
