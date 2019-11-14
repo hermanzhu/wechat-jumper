@@ -110,7 +110,7 @@ class ImageAnalyzer
             }
         }
 
-        throw new \Exception('未找到目标位的坐标，可能需要调整参数……');
+        throw new \Exception('未找到目标位的坐标，可能需要调整参数，可能需要收集场景图片……');
     }
 
     /**
